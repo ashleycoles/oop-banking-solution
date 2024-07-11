@@ -59,11 +59,13 @@ class SavingsAccount extends BankAccount {
 abstract class Customer {
     public string $name;
     public string $postcode;
+    public bool $allowOverdrafts;
 
-    public function __construct(string $name, string $postcode)
+    public function __construct(string $name, string $postcode, bool $allowOverdrafts)
     {
         $this->name = $name;
         $this->postcode = $postcode;
+        $this->allowOverdrafts = $allowOverdrafts;
     }
 
     abstract public function getDetails(): string;
@@ -84,9 +86,9 @@ class PrivateCustomer extends Customer {
 class BusinessCustomer extends Customer {
     public int $vatNumber;
 
-    public function __construct(string $name, string $postcode, int $vatNumber)
+    public function __construct(string $name, string $postcode, bool $allowOverdrafts, int $vatNumber)
     {
-        parent::__construct($name, $postcode);
+        parent::__construct($name, $postcode, $allowOverdrafts);
         $this->vatNumber = $vatNumber;
     }
 
@@ -121,8 +123,8 @@ class Transfer {
 }
 
 
-$privateCustomer = new PrivateCustomer('Bob', 'ab123cd');
-$businessCustomer = new BusinessCustomer('Bob ltd', 'ab123cd', 1248153);
+$privateCustomer = new PrivateCustomer('Bob', 'ab123cd', false);
+$businessCustomer = new BusinessCustomer('Bob ltd', 'ab123cd', true,1248153);
 
 $account = new BankAccount(100, $privateCustomer);
 $account2 = new SavingsAccount(1000, $businessCustomer);

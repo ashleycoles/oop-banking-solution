@@ -17,9 +17,13 @@ class BankAccount {
         $this->balance += $amount;
     }
 
-    public function withdraw(float $amount): void
+    public function withdraw(float $amount): bool
     {
+        if (!$this->customer->allowOverdrafts && $this->balance - $amount < 0) {
+            return false;
+        }
         $this->balance -= $amount;
+        return true;
     }
 
     public function getBalance(): float
@@ -116,7 +120,10 @@ class Transfer {
 
     public function send(float $amount): bool
     {
-        $this->sender->withdraw($amount);
+        if (!$this->sender->withdraw($amount)) {
+            return false;
+        }
+
         $this->recipient->deposit($amount);
         return true;
     }
@@ -130,7 +137,7 @@ $account = new BankAccount(100, $privateCustomer);
 $account2 = new SavingsAccount(1000, $businessCustomer);
 
 $transfer = new Transfer($account, $account2);
-$transfer->send(50);
+$transfer->send(150);
 
 echo $account->getBalance() . '<br />';
 echo $account2->getBalance();

@@ -39,7 +39,55 @@ class SavingsAccount extends BankAccount {
     }
 }
 
-$account = new SavingsAccount(1500);
-$account->deposit(250);
-$account->applyInterest();
-echo $account->getBalance();
+abstract class Customer {
+    public string $name;
+    public string $postcode;
+
+    public function __construct(string $name, string $postcode)
+    {
+        $this->name = $name;
+        $this->postcode = $postcode;
+    }
+
+    abstract public function getDetails(): string;
+}
+
+class PrivateCustomer extends Customer {
+    public function getDetails(): string
+    {
+        return "
+            <ul>
+                <li>$this->name</li>
+                <li>$this->postcode</li>
+            </ul>
+        ";
+    }
+}
+
+class BusinessCustomer extends Customer {
+    public int $vatNumber;
+
+    public function __construct(string $name, string $postcode, int $vatNumber)
+    {
+        parent::__construct($name, $postcode);
+        $this->vatNumber = $vatNumber;
+    }
+
+    public function getDetails(): string
+    {
+        return "
+            <ul>
+                <li>$this->name</li>
+                <li>$this->postcode</li>
+                <li>$this->vatNumber</li>
+            </ul>
+        ";
+    }
+}
+
+
+$privateCustomer = new PrivateCustomer('Bob', 'ab123cd');
+$businessCustomer = new BusinessCustomer('Bob ltd', 'ab123cd', 1248153);
+
+echo $privateCustomer->getDetails();
+echo $businessCustomer->getDetails();

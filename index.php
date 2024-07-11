@@ -32,7 +32,14 @@ class BankAccount {
     }
 }
 
-$account = new BankAccount(100);
-$account->deposit(10.5);
+class SavingsAccount extends BankAccount {
+    protected function calculateInterest(): float
+    {
+        return $this->balance * 0.07;
+    }
+}
+
+$account = new SavingsAccount(1500);
+$account->deposit(250);
 $account->applyInterest();
 echo $account->getBalance();

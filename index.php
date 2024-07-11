@@ -2,13 +2,14 @@
 
 class BankAccount {
     protected float $balance;
-
-    public function __construct($balance)
+    protected Customer $customer;
+    public function __construct(float $balance, Customer $customer)
     {
         if ($balance <= 0) {
             throw new Exception('You cannot open an account with no balance');
         }
         $this->balance = $balance;
+        $this->customer = $customer;
     }
 
     public function deposit(float $amount): void
@@ -24,6 +25,17 @@ class BankAccount {
     public function applyInterest(): void
     {
         $this->balance += $this->calculateInterest();
+    }
+
+    public function getDetails(): string
+    {
+        return "
+            <div>
+                <h2>Account details</h2>
+                {$this->customer->getDetails()}
+                <p>Balance: £$this->balance</p>
+            </div>
+        ";
     }
 
     protected function calculateInterest(): float
@@ -89,5 +101,6 @@ class BusinessCustomer extends Customer {
 $privateCustomer = new PrivateCustomer('Bob', 'ab123cd');
 $businessCustomer = new BusinessCustomer('Bob ltd', 'ab123cd', 1248153);
 
-echo $privateCustomer->getDetails();
-echo $businessCustomer->getDetails();
+$account = new BankAccount(100, $privateCustomer);
+
+echo $account->getDetails();

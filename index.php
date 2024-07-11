@@ -17,6 +17,11 @@ class BankAccount {
         $this->balance += $amount;
     }
 
+    public function withdraw(float $amount): void
+    {
+        $this->balance -= $amount;
+    }
+
     public function getBalance(): float
     {
         return $this->balance;
@@ -97,10 +102,34 @@ class BusinessCustomer extends Customer {
     }
 }
 
+class Transfer {
+    protected BankAccount $sender;
+    protected BankAccount $recipient;
+
+    public function __construct(BankAccount $sender, BankAccount $recipient)
+    {
+        $this->sender = $sender;
+        $this->recipient = $recipient;
+    }
+
+    public function send(float $amount): bool
+    {
+        $this->sender->withdraw($amount);
+        $this->recipient->deposit($amount);
+        return true;
+    }
+}
+
 
 $privateCustomer = new PrivateCustomer('Bob', 'ab123cd');
 $businessCustomer = new BusinessCustomer('Bob ltd', 'ab123cd', 1248153);
 
 $account = new BankAccount(100, $privateCustomer);
+$account2 = new SavingsAccount(1000, $businessCustomer);
 
-echo $account->getDetails();
+$transfer = new Transfer($account, $account2);
+$transfer->send(50);
+
+echo $account->getBalance() . '<br />';
+echo $account2->getBalance();
+
